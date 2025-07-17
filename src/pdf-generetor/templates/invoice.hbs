@@ -1,0 +1,26 @@
+<div class='invoice'>
+  <h1>Fatura #{{number}}</h1>
+  <div class='header'>
+    <div class='from'>De: {{from}}</div>
+    <div class='to'>Para: {{to}}</div>
+  </div>
+  <table class='items'>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantidade</th>
+        <th>Preço</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+        <tr>
+          <td>{{this.name}}</td>
+          <td>{{this.quantity}}</td>
+          <td>{{this.price}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <div class='total'>Total: {{total}}</div>
+</div>

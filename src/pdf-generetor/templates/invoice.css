@@ -1,0 +1,40 @@
+.invoice {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+table.items {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+table.items th,
+table.items td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+table.items th {
+  background-color: #f2f2f2;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: right;
+  margin-top: 20px;
+}

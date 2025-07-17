@@ -1,0 +1,164 @@
+{
+    "info": {
+        "_postman_id": "5611d012-dc1d-4666-9459-e6be29f1acb6",
+        "name": "mozticket_endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "user",
+            "item": [
+                {
+                    "name": "create-user[normal and scanner]",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:4000/user/create",
+                            "path": [
+                                "user",
+                                "create"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"name\": \"Bacar Assane\",\n  \"email\": \"bacarassane@gmail.com\",\n  \"password\": \"123456\",\n  \"user_type\": \"scanner\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "busca todos utilizadores",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:4000/user/all",
+                            "path": [
+                                "user",
+                                "all"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        }
+                    }
+                },
+                {
+                    "name": "create-user[promotor]",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:4000/user/create",
+                            "path": [
+                                "user",
+                                "create"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"name\": \"Bacar Assane\",\n  \"email\": \"assanebacar@gmail.com\",\n  \"password\": \"123456\",\n  \"user_type\": \"promotor\",\n  \"nrBi\": \"123453231232f\",\n  \"urlDocument\": \"https://www.rockstargames.com/VI\",\n  \"company\": {\n    \"name\": \"Nurcode\",\n    \"nuit\": \"123456\",\n    \"email\": \"nurcode@gmail.com\"\n  }\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "apagar todos utilizadores",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:4000/user/delete/all",
+                            "path": [
+                                "user",
+                                "delete",
+                                "all"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        }
+                    }
+                },
+                {
+                    "name": "apagar um utilizador",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:4000/user/delete/:id",
+                            "query": [],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "682a81eedc6bf2898cca6d4b"
+                                }
+                            ],
+                            "path": [
+                                "user",
+                                "delete",
+                                ":id"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "auth",
+            "item": [
+                {
+                    "name": "sign in",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:4000/auth/sign-in",
+                            "path": [
+                                "auth",
+                                "sign-in"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "4000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"email\": \"bacarassane12@gmail.com\",\n  \"password\": \"12345\"\n}"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
