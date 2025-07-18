@@ -11,7 +11,7 @@ import {
 export class EventService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // abuscar todosos eventos 
+  // abuscar todosos eventos
   async getAll(): Promise<any> {
     try {
       const response = await this.prisma.event.findMany({
