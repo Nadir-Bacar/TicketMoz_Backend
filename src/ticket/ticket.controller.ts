@@ -28,6 +28,15 @@ export class TicketController {
   async buyTickets(@Body('data') data: BuyTicketDto) {
     return this.ticketService.buyTicket(data);
   }
+  @Post('pay-alternative')
+  async payAlternative(@Body('data') data: any) {
+    return this.ticketService.paymentAlternative(data);
+  }
+
+  @Post('confirm-alternative')
+  async confirmPayAlternative(@Body('data') data: any) {
+    return this.ticketService.confirmPaymentAlternative(data);
+  }
 
   @Get('list-sales')
   listAllSales() {

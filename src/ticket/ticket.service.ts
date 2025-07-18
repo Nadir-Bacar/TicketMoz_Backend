@@ -199,11 +199,12 @@ export class TicketService {
         supportPhone: eventData.company.phone_number || ' - ',
         tickets: resposta.map((t) => ({
           id: t.id,
-          ticketUrl: 'http://localhost:3000/my-ticket/' + t.id,
+          ticketUrl:
+            'https://ticketmoz-backend.onrender.com//my-ticket/' + t.id,
           type: t.type,
         })),
         userName: user.name.toUpperCase() || ' - ',
-        websiteUrl: 'http://localhost:3000',
+        websiteUrl: 'https://ticket-moz-seven.vercel.app/',
         socialMediaLinks: '',
       };
 
@@ -390,6 +391,80 @@ export class TicketService {
     } catch (error) {
       console.error(error?.response?.data || error.message);
       throw error;
+    }
+  }
+
+  async paymentAlternative(data: any): Promise<any> {
+    try {
+      const url = 'http://64.23.143.176:8090/api/payments';
+
+      const headers = {
+        'X-API-KEY': 'CylJSo9boa-eO7QVCGeOaXyNLb0tDP8IXkqp0EV9Wbg',
+        'Content-Type': 'application/json',
+      };
+
+      const body = {
+        amount: 10,
+        currency: 'MZN',
+        customerId: 'dasdasduugh23u12637gjkds',
+        method: {
+          type: 'MPESA',
+          phone: '258845636664',
+        },
+      };
+
+      const response = await firstValueFrom(
+        this.httpService.post(url, body, { headers, timeout: 60000 }),
+      );
+
+      if (!response || !response.data) {
+        return {
+          success: false,
+          message: 'Erro ao realizar pagamento',
+        };
+      }
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async confirmPaymentAlternative(data: any): Promise<any> {
+    try {
+      if (!data?.paymentID) {
+        throw new Error('Payment ID is required');
+      }
+
+      const url = `http://64.23.143.176:8090/api/payments/${data.paymentID}/confirm`;
+
+      const headers = {
+        'X-API-KEY': 'CylJSo9boa-eO7QVCGeOaXyNLb0tDP8IXkqp0EV9Wbg',
+        'Content-Type': 'application/json',
+      };
+
+      // Note: The confirm endpoint might need an empty body {}
+      const response = await firstValueFrom(
+        this.httpService.post(url, {}, { headers, timeout: 60000 }),
+      );
+
+      if (!response?.data) {
+        throw new Error('No response data received from confirmation service');
+      }
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      console.error('Confirmation error:', error);
+      throw new HttpException(
+        error.response?.data?.message || 'Failed to confirm payment',
+        error.response?.status || HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
