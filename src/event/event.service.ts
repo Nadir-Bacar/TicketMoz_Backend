@@ -427,4 +427,37 @@ export class EventService {
       return error;
     }
   }
+
+  async getEventByPromoter(userID: string): Promise<any> {
+    try {
+      const response = await this.prisma.event.findMany({
+        where: {
+          company: {
+            userId: userID,
+          },
+        },
+        include: {
+          ticket: {
+            include: {
+              ticketType: true,
+            },
+          },
+        },
+      });
+
+      if (response.length == 0) {
+        return {
+          success: false,
+          message: 'Nenhum evento encontrado',
+        };
+      }
+
+      return {
+        success: true,
+        data: response,
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

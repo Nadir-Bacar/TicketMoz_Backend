@@ -39,13 +39,18 @@ export class EventController {
     return this.eventService.getScannersByEvent(eventID);
   }
 
+  @Get('by-promoter/:userID')
+  getByPromoter(@Param('userID') userID: string) {
+    return this.eventService.getEventByPromoter(userID);
+  }
+
   @Post('create')
   create(@Body() event: CreateEventDto) {
     return this.eventService.createEvent(event);
   }
 
   @Put('update/:id')
-  updateEvent(@Param('id') id: string, @Body() data: CreateEventDto) {
+  updateEvent(@Param('id') id: string, @Body() data: any) {
     return this.updateEvent(id, data);
   }
 
