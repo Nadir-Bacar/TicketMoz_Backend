@@ -50,8 +50,8 @@ export class EventController {
   }
 
   @Put('update/:id')
-  updateEvent(@Param('id') id: string, @Body() data: any) {
-    return this.updateEvent(id, data);
+  async updateEvent(@Param('id') id: string, @Body() data: CreateEventDto) {
+    return this.eventService.updateEventALternative(id, data);
   }
 
   @Delete('delete/:id')

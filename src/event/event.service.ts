@@ -227,15 +227,33 @@ export class EventService {
     }
   }
 
-  // update
-  async updateEvent(eventId: string, event: CreateEventDto): Promise<any> {
+  async updateEventAlternative(
+    eventId: string,
+    event: CreateEventDto,
+  ): Promise<any> {
     try {
-      await this.prisma.event.deleteMany({
-        where: { id: eventId },
+      // First, get the ticket ID associated with this event
+      const existingTicket = await this.prisma.ticket.findFirst({
+        where: {
+          event: {
+            id: eventId,
+          },
+        },
+        select: {
+          id: true,
+        },
       });
 
-      // Verifica se o evento existe
-      const response = await this.prisma.event.create({
+      if (!existingTicket) {
+        throw new HttpException(
+          'No ticket found for this event',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Update the event
+      const updatedEvent = await this.prisma.event.update({
+        where: { id: eventId },
         data: {
           title: event.title,
           category: event.category,
@@ -245,27 +263,27 @@ export class EventService {
           event_date: event.event_date,
           start_time: event.start_time,
           end_time: event.end_time,
-          company: {
-            connect: { id: event.companyId },
-          },
-          ticket: {
-            create: {
-              ticketType: {
-                createMany: {
-                  data: event.ticket.ticketTypes.map((t) => ({
-                    name: t.name,
-                    quantity: t.quantity,
-                    price: t.price,
-                  })),
-                },
-              },
-            },
-          },
         },
-        include: {
-          ticket: {
-            include: {
-              ticketType: true,
+      });
+
+      // Delete existing ticket types
+      await this.prisma.ticketType.deleteMany({
+        where: {
+          ticketId: existingTicket.id,
+        },
+      });
+
+      // Create new ticket types
+      await this.prisma.ticket.update({
+        where: { id: existingTicket.id },
+        data: {
+          ticketType: {
+            createMany: {
+              data: event.ticket.ticketTypes.map((t) => ({
+                name: t.name,
+                quantity: t.quantity,
+                price: t.price,
+              })),
             },
           },
         },
@@ -273,7 +291,68 @@ export class EventService {
 
       return {
         success: true,
-        data: plainToInstance(EventResponseDto, response),
+        data: plainToInstance(EventResponseDto, updatedEvent),
+      };
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao atualizar evento: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateEventALternative(
+    eventId: string,
+    event: CreateEventDto,
+  ): Promise<any> {
+    try {
+      // Primeiro atualiza o evento
+      const updatedEvent = await this.prisma.event.update({
+        where: { id: eventId },
+        data: {
+          title: event.title,
+          category: event.category,
+          description: event.description,
+          image: event.image,
+          location: event.location,
+          event_date: event.event_date,
+          start_time: event.start_time,
+          end_time: event.end_time,
+          // companyId não precisa ser atualizado
+        },
+      });
+
+      // Depois atualiza os tickets (primeiro deleta os existentes)
+      await this.prisma.ticketType.deleteMany({
+        where: {
+          ticket: {
+            event: {
+              id: eventId,
+            },
+          },
+        },
+      });
+
+      await this.prisma.ticket.update({
+        where: {
+          id: updatedEvent.ticketId,
+        },
+        data: {
+          ticketType: {
+            createMany: {
+              data: event.ticket.ticketTypes.map((t) => ({
+                name: t.name,
+                quantity: t.quantity,
+                price: t.price,
+              })),
+            },
+          },
+        },
+      });
+
+      return {
+        success: true,
+        data: plainToInstance(EventResponseDto, updatedEvent),
       };
     } catch (error) {
       throw new HttpException(
