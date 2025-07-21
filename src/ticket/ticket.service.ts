@@ -104,7 +104,7 @@ export class TicketService {
   async buyTicket(data: any): Promise<any> {
     try {
       const eventData = await this.prisma.event.findFirst({
-        where: { id: data.eventId },
+        where: { id: String(data.eventId) },
         include: {
           company: true,
           ticket: {
@@ -130,21 +130,21 @@ export class TicketService {
           const normal = await this.prisma.salesTickets.create({
             data: {
               qrCode: '' + randomInt(1000),
-              paymentMethod: data.payment_method || 'default',
+              paymentMethod: data.payment_method + '' || 'default',
               tiketType: {
-                connect: { id: normalTicketType.id },
+                connect: { id: normalTicketType.id + '' },
               },
               user: {
-                connect: { id: data.user_id },
+                connect: { id: data.user_id + '' },
               },
               company: {
-                connect: { id: eventData.companyId },
+                connect: { id: eventData.companyId + '' },
               },
             },
           });
 
           await this.prisma.ticketType.update({
-            where: { id: normalTicketType.id },
+            where: { id: normalTicketType.id + '' },
             data: { quantity: { decrement: 1 } },
           });
 
@@ -163,16 +163,16 @@ export class TicketService {
               qrCode: '' + randomInt(1000),
               paymentMethod: data.payment_method || 'default',
               tiketType: {
-                connect: { id: vipTicketType.id },
+                connect: { id: vipTicketType.id + '' },
               },
               user: {
-                connect: { id: data.user_id },
+                connect: { id: data.user_id + '' },
               },
             },
           });
 
           await this.prisma.ticketType.update({
-            where: { id: vipTicketType.id },
+            where: { id: vipTicketType.id + '' },
             data: { quantity: { decrement: 1 } },
           });
 
@@ -184,7 +184,7 @@ export class TicketService {
       }
 
       const user = await this.prisma.user.findFirst({
-        where: { id: data.user_id },
+        where: { id: data.user_id + '' },
         include: {
           company: true,
         },
@@ -204,9 +204,9 @@ export class TicketService {
         organizationName: eventData.company.name || ' - ',
         supportPhone: eventData.company.phone_number || ' - ',
         tickets: resposta.map((t) => ({
-          id: t.id,
+          id: t.id + '',
           ticketUrl: `http://ticket-moz-seven.vercel.app/my-ticket/` + t.id,
-          type: t.type,
+          type: t.type + '',
         })),
         userName: user.name.toUpperCase() || ' - ',
         websiteUrl: 'http://ticket-moz-seven.vercel.app',
