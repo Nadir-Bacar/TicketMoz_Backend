@@ -101,7 +101,7 @@ export class TicketService {
     }
   }
 
-  async buyTicket(data: any): Promise<any> {
+async buyTicket(data: any): Promise<any> {
     try {
       const eventData = await this.prisma.event.findFirst({
         where: { id: String(data.eventId) },
@@ -126,7 +126,17 @@ export class TicketService {
 
       if (data.normal_ticket > 0) {
         for (let i = 0; i < data.normal_ticket; i++) {
-          const normalTicketType = eventData.ticket.ticketType[1];
+          const normalTicketType = eventData.ticket.ticketType.find(
+            (t) => t.name === 'Normal',
+          );
+
+          if (!normalTicketType) {
+            return {
+              success: false,
+              message: 'Normal tickets not available for this event',
+            };
+          }
+
           const normal = await this.prisma.salesTickets.create({
             data: {
               qrCode: '' + randomInt(1000),
@@ -157,7 +167,16 @@ export class TicketService {
 
       if (data.vip_ticket > 0) {
         for (let i = 0; i < data.vip_ticket; i++) {
-          const vipTicketType = eventData.ticket.ticketType[0];
+          const vipTicketType = eventData.ticket.ticketType.find(
+            (t) => t.name === 'VIP',
+          );
+
+          if (!vipTicketType) {
+            return {
+              success: false,
+              message: 'VIP tickets not available for this event',
+            };
+          }
           const vip = await this.prisma.salesTickets.create({
             data: {
               qrCode: '' + randomInt(1000),
@@ -172,7 +191,7 @@ export class TicketService {
           });
 
           await this.prisma.ticketType.update({
-            where: { id: vipTicketType.id + '' },
+            where: { id: vipTicketType.id },
             data: { quantity: { decrement: 1 } },
           });
 
@@ -184,7 +203,7 @@ export class TicketService {
       }
 
       const user = await this.prisma.user.findFirst({
-        where: { id: data.user_id + '' },
+        where: { id: data.user_id },
         include: {
           company: true,
         },
