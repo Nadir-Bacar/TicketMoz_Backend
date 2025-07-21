@@ -101,8 +101,24 @@ export class TicketService {
     }
   }
 
-  async buyTicket(data: any): Promise<any> {
+  async buyTicket(data: {
+    normal_ticket: number;
+    vip_ticket: number;
+    eventId: string;
+    payment_method: string;
+    user_id: string;
+    phone_number_payment?: string;
+    total?: number;
+  }): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
+      // Validate input
+      if (!data.eventId || !data.user_id) {
+        return {
+          success: false,
+          message: 'Event ID and User ID are required',
+        };
+      }
+
       const eventData = await this.prisma.event.findFirst({
         where: { id: String(data.eventId) },
         include: {
@@ -118,33 +134,49 @@ export class TicketService {
       if (!eventData) {
         return {
           success: false,
-          message: 'Nenhum evento encontrado',
+          message: 'Event not found',
         };
       }
 
-      let resposta = [];
+      const resposta = [];
+      const ticketTypes = eventData.ticket.ticketType;
 
+      // Process normal tickets
       if (data.normal_ticket > 0) {
+        const normalTicketType = ticketTypes.find((t) => t.name === 'Normal');
+        if (!normalTicketType) {
+          return {
+            success: false,
+            message: 'Normal ticket type not available',
+          };
+        }
+
         for (let i = 0; i < data.normal_ticket; i++) {
-          const normalTicketType = eventData.ticket.ticketType[1];
+          if (normalTicketType.quantity <= 0) {
+            return {
+              success: false,
+              message: 'Not enough normal tickets available',
+            };
+          }
+
           const normal = await this.prisma.salesTickets.create({
             data: {
-              qrCode: '' + randomInt(1000),
-              paymentMethod: data.payment_method + '' || 'default',
+              qrCode: String(randomInt(1000)),
+              paymentMethod: data.payment_method || 'default',
               tiketType: {
-                connect: { id: normalTicketType.id + '' },
+                connect: { id: String(normalTicketType.id) },
               },
               user: {
-                connect: { id: data.user_id + '' },
+                connect: { id: String(data.user_id) },
               },
               company: {
-                connect: { id: eventData.companyId + '' },
+                connect: { id: String(eventData.companyId) },
               },
             },
           });
 
           await this.prisma.ticketType.update({
-            where: { id: normalTicketType.id + '' },
+            where: { id: String(normalTicketType.id) },
             data: { quantity: { decrement: 1 } },
           });
 
@@ -155,24 +187,42 @@ export class TicketService {
         }
       }
 
+      // Process VIP tickets
       if (data.vip_ticket > 0) {
+        const vipTicketType = ticketTypes.find((t) => t.name === 'VIP');
+        if (!vipTicketType) {
+          return {
+            success: false,
+            message: 'VIP ticket type not available',
+          };
+        }
+
         for (let i = 0; i < data.vip_ticket; i++) {
-          const vipTicketType = eventData.ticket.ticketType[0];
+          if (vipTicketType.quantity <= 0) {
+            return {
+              success: false,
+              message: 'Not enough VIP tickets available',
+            };
+          }
+
           const vip = await this.prisma.salesTickets.create({
             data: {
-              qrCode: '' + randomInt(1000),
+              qrCode: String(randomInt(1000)),
               paymentMethod: data.payment_method || 'default',
               tiketType: {
-                connect: { id: vipTicketType.id + '' },
+                connect: { id: String(vipTicketType.id) },
               },
               user: {
-                connect: { id: data.user_id + '' },
+                connect: { id: String(data.user_id) },
+              },
+              company: {
+                connect: { id: String(eventData.companyId) },
               },
             },
           });
 
           await this.prisma.ticketType.update({
-            where: { id: vipTicketType.id + '' },
+            where: { id: String(vipTicketType.id) },
             data: { quantity: { decrement: 1 } },
           });
 
@@ -183,18 +233,18 @@ export class TicketService {
         }
       }
 
+      // Send email
       const user = await this.prisma.user.findFirst({
-        where: { id: data.user_id + '' },
-        include: {
-          company: true,
-        },
+        where: { id: String(data.user_id) },
+        include: { company: true },
       });
 
-      if (!user)
+      if (!user) {
         return {
           success: false,
-          message: 'Nenhum utilizador encontrado',
+          message: 'User not found',
         };
+      }
 
       const params: SendTicketEmailParams = {
         email: user.email,
@@ -204,9 +254,9 @@ export class TicketService {
         organizationName: eventData.company.name || ' - ',
         supportPhone: eventData.company.phone_number || ' - ',
         tickets: resposta.map((t) => ({
-          id: t.id + '',
-          ticketUrl: `http://ticket-moz-seven.vercel.app/my-ticket/` + t.id,
-          type: t.type + '',
+          id: String(t.id),
+          ticketUrl: `http://ticket-moz-seven.vercel.app/my-ticket/${t.id}`,
+          type: String(t.type),
         })),
         userName: user.name.toUpperCase() || ' - ',
         websiteUrl: 'http://ticket-moz-seven.vercel.app',
@@ -220,8 +270,9 @@ export class TicketService {
         data: resposta,
       };
     } catch (error) {
+      console.error('Error in buyTicket:', error);
       throw new HttpException(
-        'Erro ao processar requisição -> ' + error,
+        'Error processing request: ' + error.message,
         HttpStatus.BAD_REQUEST,
       );
     }
