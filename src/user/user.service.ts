@@ -116,7 +116,7 @@ export class UserService {
       const payload = { user: user };
       const token = await this.jwtService.signAsync(payload);
 
-      const url = `http://localhost:3000/user-registe/${token}`;
+      const url = `${process.env.NEXT_PORT || 'http://ticket-moz-seven.vercel.app'}/user-registe/${token}`;
 
       await this.emailService.sendAccountActivation(user.email, user.name, url);
 

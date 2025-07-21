@@ -181,6 +181,7 @@ exports.Prisma.TicketTypeScalarFieldEnum = {
 exports.Prisma.SalesTicketsScalarFieldEnum = {
   id: 'id',
   ticketTypeID: 'ticketTypeID',
+  companyID: 'companyID',
   qrCode: 'qrCode',
   paymentMethod: 'paymentMethod',
   isUsed: 'isUsed',
@@ -192,7 +193,8 @@ exports.Prisma.SalesTicketsScalarFieldEnum = {
 exports.Prisma.UserEventScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  eventId: 'eventId'
+  eventId: 'eventId',
+  status: 'status'
 };
 
 exports.Prisma.SortOrder = {

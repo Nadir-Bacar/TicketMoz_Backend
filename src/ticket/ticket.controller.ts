@@ -55,7 +55,7 @@ export class TicketController {
 
   @Get('list-sales/:userID')
   listSales(@Param('userID') userID: string) {
-    return this.ticketService.listSales(userID);
+    return this.ticketService.listCompanySales(userID);
   }
 
   @Get(':userID')

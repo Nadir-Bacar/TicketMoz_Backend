@@ -146,7 +146,11 @@ export class EventService {
           },
         },
         include: {
-          company: true,
+          company: {
+            include: {
+              user: true,
+            },
+          },
           userEvent: true,
           inviteScanner: true,
           ticket: {

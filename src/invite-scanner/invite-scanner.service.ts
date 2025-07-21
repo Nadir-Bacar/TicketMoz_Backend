@@ -1,17 +1,39 @@
 import { Event } from './../../generated/prisma/index.d';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { v4 as uuidv4 } from 'uuid';
 import * as dayjs from 'dayjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class InviteScannerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async createInvite(eventId: string, total_scanner: number): Promise<any> {
     // Gera token único
-    const token = uuidv4();
+    // const token = uuidv4();
     const expiresAt = dayjs().add(1, 'day').toDate();
+
+    const evento = await this.prisma.event.findFirst({
+      where: {
+        id: eventId,
+      },
+      include: {
+        userEvent: true,
+        company: true,
+      },
+    });
+
+    if (!evento)
+      return {
+        success: false,
+        message: 'Nenhum evento encontrado ',
+      };
+
+    const payload = { event: evento };
+    const token = this.jwtService.sign(payload);
 
     // Cria o convite
     const invite = await this.prisma.inviteScanner.create({
@@ -28,7 +50,7 @@ export class InviteScannerService {
     });
 
     // Envia o email (exemplo, use seu serviço real de email)
-    const link = `${process.env.NEXT_PORT}/scanner-invite/${token}`;
+    const link = `https://ticket-moz-seven.vercel.app/scanner-invite/${token}`;
 
     return {
       success: true,
@@ -40,6 +62,9 @@ export class InviteScannerService {
 
   async acceptInvite(token: string, userId: string): Promise<any> {
     try {
+      const data = this.jwtService.decode(token);
+      const evento = data.event;
+
       const invite = await this.prisma.event.findFirst({
         where: {
           inviteScanner: {
@@ -72,12 +97,11 @@ export class InviteScannerService {
           message: 'Limite de scanners atingido!',
         };
 
-      const verifyUser = await this.prisma.event.findFirst({
+      const verifyUser = await this.prisma.userEvent.findFirst({
         where: {
-          userEvent: {
-            some: {
-              userId: userId,
-            },
+          eventId: evento.id,
+          AND: {
+            userId: userId,
           },
         },
       });

@@ -1501,10 +1501,12 @@ export namespace Prisma {
 
   export type CompanyCountOutputType = {
     events: number
+    sales: number
   }
 
   export type CompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     events?: boolean | CompanyCountOutputTypeCountEventsArgs
+    sales?: boolean | CompanyCountOutputTypeCountSalesArgs
   }
 
   // Custom InputTypes
@@ -1523,6 +1525,13 @@ export namespace Prisma {
    */
   export type CompanyCountOutputTypeCountEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EventWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountSalesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTicketsWhereInput
   }
 
 
@@ -2920,6 +2929,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     events?: boolean | Company$eventsArgs<ExtArgs>
+    sales?: boolean | Company$salesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["company"]>
@@ -2941,6 +2951,7 @@ export namespace Prisma {
   export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone_number" | "nuit_url" | "isVerify" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
   export type CompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     events?: boolean | Company$eventsArgs<ExtArgs>
+    sales?: boolean | Company$salesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2949,6 +2960,7 @@ export namespace Prisma {
     name: "Company"
     objects: {
       events: Prisma.$EventPayload<ExtArgs>[]
+      sales: Prisma.$SalesTicketsPayload<ExtArgs>[]
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3325,6 +3337,7 @@ export namespace Prisma {
   export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     events<T extends Company$eventsArgs<ExtArgs> = {}>(args?: Subset<T, Company$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sales<T extends Company$salesArgs<ExtArgs> = {}>(args?: Subset<T, Company$salesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTicketsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3755,6 +3768,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EventScalarFieldEnum | EventScalarFieldEnum[]
+  }
+
+  /**
+   * Company.sales
+   */
+  export type Company$salesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTickets
+     */
+    select?: SalesTicketsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTickets
+     */
+    omit?: SalesTicketsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTicketsInclude<ExtArgs> | null
+    where?: SalesTicketsWhereInput
+    orderBy?: SalesTicketsOrderByWithRelationInput | SalesTicketsOrderByWithRelationInput[]
+    cursor?: SalesTicketsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesTicketsScalarFieldEnum | SalesTicketsScalarFieldEnum[]
   }
 
   /**
@@ -8016,6 +8053,7 @@ export namespace Prisma {
   export type SalesTicketsMinAggregateOutputType = {
     id: string | null
     ticketTypeID: string | null
+    companyID: string | null
     qrCode: string | null
     paymentMethod: string | null
     isUsed: boolean | null
@@ -8027,6 +8065,7 @@ export namespace Prisma {
   export type SalesTicketsMaxAggregateOutputType = {
     id: string | null
     ticketTypeID: string | null
+    companyID: string | null
     qrCode: string | null
     paymentMethod: string | null
     isUsed: boolean | null
@@ -8038,6 +8077,7 @@ export namespace Prisma {
   export type SalesTicketsCountAggregateOutputType = {
     id: number
     ticketTypeID: number
+    companyID: number
     qrCode: number
     paymentMethod: number
     isUsed: number
@@ -8051,6 +8091,7 @@ export namespace Prisma {
   export type SalesTicketsMinAggregateInputType = {
     id?: true
     ticketTypeID?: true
+    companyID?: true
     qrCode?: true
     paymentMethod?: true
     isUsed?: true
@@ -8062,6 +8103,7 @@ export namespace Prisma {
   export type SalesTicketsMaxAggregateInputType = {
     id?: true
     ticketTypeID?: true
+    companyID?: true
     qrCode?: true
     paymentMethod?: true
     isUsed?: true
@@ -8073,6 +8115,7 @@ export namespace Prisma {
   export type SalesTicketsCountAggregateInputType = {
     id?: true
     ticketTypeID?: true
+    companyID?: true
     qrCode?: true
     paymentMethod?: true
     isUsed?: true
@@ -8157,6 +8200,7 @@ export namespace Prisma {
   export type SalesTicketsGroupByOutputType = {
     id: string
     ticketTypeID: string
+    companyID: string | null
     qrCode: string
     paymentMethod: string
     isUsed: boolean
@@ -8185,6 +8229,7 @@ export namespace Prisma {
   export type SalesTicketsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ticketTypeID?: boolean
+    companyID?: boolean
     qrCode?: boolean
     paymentMethod?: boolean
     isUsed?: boolean
@@ -8192,6 +8237,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     tiketType?: boolean | TicketTypeDefaultArgs<ExtArgs>
+    company?: boolean | SalesTickets$companyArgs<ExtArgs>
     user?: boolean | SalesTickets$userArgs<ExtArgs>
   }, ExtArgs["result"]["salesTickets"]>
 
@@ -8200,6 +8246,7 @@ export namespace Prisma {
   export type SalesTicketsSelectScalar = {
     id?: boolean
     ticketTypeID?: boolean
+    companyID?: boolean
     qrCode?: boolean
     paymentMethod?: boolean
     isUsed?: boolean
@@ -8208,9 +8255,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SalesTicketsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ticketTypeID" | "qrCode" | "paymentMethod" | "isUsed" | "userid" | "createdAt" | "updatedAt", ExtArgs["result"]["salesTickets"]>
+  export type SalesTicketsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ticketTypeID" | "companyID" | "qrCode" | "paymentMethod" | "isUsed" | "userid" | "createdAt" | "updatedAt", ExtArgs["result"]["salesTickets"]>
   export type SalesTicketsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tiketType?: boolean | TicketTypeDefaultArgs<ExtArgs>
+    company?: boolean | SalesTickets$companyArgs<ExtArgs>
     user?: boolean | SalesTickets$userArgs<ExtArgs>
   }
 
@@ -8218,11 +8266,13 @@ export namespace Prisma {
     name: "SalesTickets"
     objects: {
       tiketType: Prisma.$TicketTypePayload<ExtArgs>
+      company: Prisma.$CompanyPayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ticketTypeID: string
+      companyID: string | null
       qrCode: string
       paymentMethod: string
       isUsed: boolean
@@ -8593,6 +8643,7 @@ export namespace Prisma {
   export interface Prisma__SalesTicketsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tiketType<T extends TicketTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TicketTypeDefaultArgs<ExtArgs>>): Prisma__TicketTypeClient<$Result.GetResult<Prisma.$TicketTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    company<T extends SalesTickets$companyArgs<ExtArgs> = {}>(args?: Subset<T, SalesTickets$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends SalesTickets$userArgs<ExtArgs> = {}>(args?: Subset<T, SalesTickets$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8625,6 +8676,7 @@ export namespace Prisma {
   interface SalesTicketsFieldRefs {
     readonly id: FieldRef<"SalesTickets", 'String'>
     readonly ticketTypeID: FieldRef<"SalesTickets", 'String'>
+    readonly companyID: FieldRef<"SalesTickets", 'String'>
     readonly qrCode: FieldRef<"SalesTickets", 'String'>
     readonly paymentMethod: FieldRef<"SalesTickets", 'String'>
     readonly isUsed: FieldRef<"SalesTickets", 'Boolean'>
@@ -9001,6 +9053,25 @@ export namespace Prisma {
   }
 
   /**
+   * SalesTickets.company
+   */
+  export type SalesTickets$companyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Company
+     */
+    select?: CompanySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Company
+     */
+    omit?: CompanyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CompanyInclude<ExtArgs> | null
+    where?: CompanyWhereInput
+  }
+
+  /**
    * SalesTickets.user
    */
   export type SalesTickets$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9052,18 +9123,21 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     eventId: string | null
+    status: boolean | null
   }
 
   export type UserEventMaxAggregateOutputType = {
     id: string | null
     userId: string | null
     eventId: string | null
+    status: boolean | null
   }
 
   export type UserEventCountAggregateOutputType = {
     id: number
     userId: number
     eventId: number
+    status: number
     _all: number
   }
 
@@ -9072,18 +9146,21 @@ export namespace Prisma {
     id?: true
     userId?: true
     eventId?: true
+    status?: true
   }
 
   export type UserEventMaxAggregateInputType = {
     id?: true
     userId?: true
     eventId?: true
+    status?: true
   }
 
   export type UserEventCountAggregateInputType = {
     id?: true
     userId?: true
     eventId?: true
+    status?: true
     _all?: true
   }
 
@@ -9163,6 +9240,7 @@ export namespace Prisma {
     id: string
     userId: string
     eventId: string
+    status: boolean
     _count: UserEventCountAggregateOutputType | null
     _min: UserEventMinAggregateOutputType | null
     _max: UserEventMaxAggregateOutputType | null
@@ -9186,6 +9264,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     eventId?: boolean
+    status?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     event?: boolean | EventDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userEvent"]>
@@ -9196,9 +9275,10 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     eventId?: boolean
+    status?: boolean
   }
 
-  export type UserEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "eventId", ExtArgs["result"]["userEvent"]>
+  export type UserEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "eventId" | "status", ExtArgs["result"]["userEvent"]>
   export type UserEventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -9214,6 +9294,7 @@ export namespace Prisma {
       id: string
       userId: string
       eventId: string
+      status: boolean
     }, ExtArgs["result"]["userEvent"]>
     composites: {}
   }
@@ -9611,6 +9692,7 @@ export namespace Prisma {
     readonly id: FieldRef<"UserEvent", 'String'>
     readonly userId: FieldRef<"UserEvent", 'String'>
     readonly eventId: FieldRef<"UserEvent", 'String'>
+    readonly status: FieldRef<"UserEvent", 'Boolean'>
   }
     
 
@@ -10089,6 +10171,7 @@ export namespace Prisma {
   export const SalesTicketsScalarFieldEnum: {
     id: 'id',
     ticketTypeID: 'ticketTypeID',
+    companyID: 'companyID',
     qrCode: 'qrCode',
     paymentMethod: 'paymentMethod',
     isUsed: 'isUsed',
@@ -10103,7 +10186,8 @@ export namespace Prisma {
   export const UserEventScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
-    eventId: 'eventId'
+    eventId: 'eventId',
+    status: 'status'
   };
 
   export type UserEventScalarFieldEnum = (typeof UserEventScalarFieldEnum)[keyof typeof UserEventScalarFieldEnum]
@@ -10231,11 +10315,11 @@ export namespace Prisma {
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     user_type?: StringFilter<"User"> | string
     token?: StringNullableFilter<"User"> | string | null
@@ -10245,7 +10329,7 @@ export namespace Prisma {
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     SalesTickets?: SalesTicketsListRelationFilter
     UserEvent?: UserEventListRelationFilter
-  }, "id">
+  }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -10291,6 +10375,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Company"> | Date | string | null
     events?: EventListRelationFilter
+    sales?: SalesTicketsListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -10305,6 +10390,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     events?: EventOrderByRelationAggregateInput
+    sales?: SalesTicketsOrderByRelationAggregateInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -10322,6 +10408,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Company"> | Date | string | null
     events?: EventListRelationFilter
+    sales?: SalesTicketsListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -10645,6 +10732,7 @@ export namespace Prisma {
     NOT?: SalesTicketsWhereInput | SalesTicketsWhereInput[]
     id?: StringFilter<"SalesTickets"> | string
     ticketTypeID?: StringFilter<"SalesTickets"> | string
+    companyID?: StringNullableFilter<"SalesTickets"> | string | null
     qrCode?: StringFilter<"SalesTickets"> | string
     paymentMethod?: StringFilter<"SalesTickets"> | string
     isUsed?: BoolFilter<"SalesTickets"> | boolean
@@ -10652,12 +10740,14 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SalesTickets"> | Date | string
     updatedAt?: DateTimeFilter<"SalesTickets"> | Date | string
     tiketType?: XOR<TicketTypeScalarRelationFilter, TicketTypeWhereInput>
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type SalesTicketsOrderByWithRelationInput = {
     id?: SortOrder
     ticketTypeID?: SortOrder
+    companyID?: SortOrder
     qrCode?: SortOrder
     paymentMethod?: SortOrder
     isUsed?: SortOrder
@@ -10665,6 +10755,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tiketType?: TicketTypeOrderByWithRelationInput
+    company?: CompanyOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -10674,6 +10765,7 @@ export namespace Prisma {
     OR?: SalesTicketsWhereInput[]
     NOT?: SalesTicketsWhereInput | SalesTicketsWhereInput[]
     ticketTypeID?: StringFilter<"SalesTickets"> | string
+    companyID?: StringNullableFilter<"SalesTickets"> | string | null
     qrCode?: StringFilter<"SalesTickets"> | string
     paymentMethod?: StringFilter<"SalesTickets"> | string
     isUsed?: BoolFilter<"SalesTickets"> | boolean
@@ -10681,12 +10773,14 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SalesTickets"> | Date | string
     updatedAt?: DateTimeFilter<"SalesTickets"> | Date | string
     tiketType?: XOR<TicketTypeScalarRelationFilter, TicketTypeWhereInput>
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type SalesTicketsOrderByWithAggregationInput = {
     id?: SortOrder
     ticketTypeID?: SortOrder
+    companyID?: SortOrder
     qrCode?: SortOrder
     paymentMethod?: SortOrder
     isUsed?: SortOrder
@@ -10704,6 +10798,7 @@ export namespace Prisma {
     NOT?: SalesTicketsScalarWhereWithAggregatesInput | SalesTicketsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SalesTickets"> | string
     ticketTypeID?: StringWithAggregatesFilter<"SalesTickets"> | string
+    companyID?: StringNullableWithAggregatesFilter<"SalesTickets"> | string | null
     qrCode?: StringWithAggregatesFilter<"SalesTickets"> | string
     paymentMethod?: StringWithAggregatesFilter<"SalesTickets"> | string
     isUsed?: BoolWithAggregatesFilter<"SalesTickets"> | boolean
@@ -10719,6 +10814,7 @@ export namespace Prisma {
     id?: StringFilter<"UserEvent"> | string
     userId?: StringFilter<"UserEvent"> | string
     eventId?: StringFilter<"UserEvent"> | string
+    status?: BoolFilter<"UserEvent"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
   }
@@ -10727,6 +10823,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     eventId?: SortOrder
+    status?: SortOrder
     user?: UserOrderByWithRelationInput
     event?: EventOrderByWithRelationInput
   }
@@ -10738,6 +10835,7 @@ export namespace Prisma {
     NOT?: UserEventWhereInput | UserEventWhereInput[]
     userId?: StringFilter<"UserEvent"> | string
     eventId?: StringFilter<"UserEvent"> | string
+    status?: BoolFilter<"UserEvent"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
   }, "id">
@@ -10746,6 +10844,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     eventId?: SortOrder
+    status?: SortOrder
     _count?: UserEventCountOrderByAggregateInput
     _max?: UserEventMaxOrderByAggregateInput
     _min?: UserEventMinOrderByAggregateInput
@@ -10758,6 +10857,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"UserEvent"> | string
     userId?: StringWithAggregatesFilter<"UserEvent"> | string
     eventId?: StringWithAggregatesFilter<"UserEvent"> | string
+    status?: BoolWithAggregatesFilter<"UserEvent"> | boolean
   }
 
   export type UserCreateInput = {
@@ -10862,6 +10962,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     events?: EventCreateNestedManyWithoutCompanyInput
+    sales?: SalesTicketsCreateNestedManyWithoutCompanyInput
     user: UserCreateNestedOneWithoutCompanyInput
   }
 
@@ -10876,6 +10977,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     events?: EventUncheckedCreateNestedManyWithoutCompanyInput
+    sales?: SalesTicketsUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUpdateInput = {
@@ -10887,6 +10989,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     events?: EventUpdateManyWithoutCompanyNestedInput
+    sales?: SalesTicketsUpdateManyWithoutCompanyNestedInput
     user?: UserUpdateOneRequiredWithoutCompanyNestedInput
   }
 
@@ -10900,6 +11003,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     events?: EventUncheckedUpdateManyWithoutCompanyNestedInput
+    sales?: SalesTicketsUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyCreateManyInput = {
@@ -11230,12 +11334,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tiketType: TicketTypeCreateNestedOneWithoutSalesTicketsInput
+    company?: CompanyCreateNestedOneWithoutSalesInput
     user?: UserCreateNestedOneWithoutSalesTicketsInput
   }
 
   export type SalesTicketsUncheckedCreateInput = {
     id?: string
     ticketTypeID: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -11251,11 +11357,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tiketType?: TicketTypeUpdateOneRequiredWithoutSalesTicketsNestedInput
+    company?: CompanyUpdateOneWithoutSalesNestedInput
     user?: UserUpdateOneWithoutSalesTicketsNestedInput
   }
 
   export type SalesTicketsUncheckedUpdateInput = {
     ticketTypeID?: StringFieldUpdateOperationsInput | string
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean
@@ -11267,6 +11375,7 @@ export namespace Prisma {
   export type SalesTicketsCreateManyInput = {
     id?: string
     ticketTypeID: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -11285,6 +11394,7 @@ export namespace Prisma {
 
   export type SalesTicketsUncheckedUpdateManyInput = {
     ticketTypeID?: StringFieldUpdateOperationsInput | string
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean
@@ -11295,6 +11405,7 @@ export namespace Prisma {
 
   export type UserEventCreateInput = {
     id?: string
+    status?: boolean
     user: UserCreateNestedOneWithoutUserEventInput
     event: EventCreateNestedOneWithoutUserEventInput
   }
@@ -11303,9 +11414,11 @@ export namespace Prisma {
     id?: string
     userId: string
     eventId: string
+    status?: boolean
   }
 
   export type UserEventUpdateInput = {
+    status?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutUserEventNestedInput
     event?: EventUpdateOneRequiredWithoutUserEventNestedInput
   }
@@ -11313,21 +11426,24 @@ export namespace Prisma {
   export type UserEventUncheckedUpdateInput = {
     userId?: StringFieldUpdateOperationsInput | string
     eventId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserEventCreateManyInput = {
     id?: string
     userId: string
     eventId: string
+    status?: boolean
   }
 
   export type UserEventUpdateManyMutationInput = {
-
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserEventUncheckedUpdateManyInput = {
     userId?: StringFieldUpdateOperationsInput | string
     eventId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -11827,6 +11943,7 @@ export namespace Prisma {
   export type SalesTicketsCountOrderByAggregateInput = {
     id?: SortOrder
     ticketTypeID?: SortOrder
+    companyID?: SortOrder
     qrCode?: SortOrder
     paymentMethod?: SortOrder
     isUsed?: SortOrder
@@ -11838,6 +11955,7 @@ export namespace Prisma {
   export type SalesTicketsMaxOrderByAggregateInput = {
     id?: SortOrder
     ticketTypeID?: SortOrder
+    companyID?: SortOrder
     qrCode?: SortOrder
     paymentMethod?: SortOrder
     isUsed?: SortOrder
@@ -11849,6 +11967,7 @@ export namespace Prisma {
   export type SalesTicketsMinOrderByAggregateInput = {
     id?: SortOrder
     ticketTypeID?: SortOrder
+    companyID?: SortOrder
     qrCode?: SortOrder
     paymentMethod?: SortOrder
     isUsed?: SortOrder
@@ -11869,18 +11988,21 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     eventId?: SortOrder
+    status?: SortOrder
   }
 
   export type UserEventMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     eventId?: SortOrder
+    status?: SortOrder
   }
 
   export type UserEventMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     eventId?: SortOrder
+    status?: SortOrder
   }
 
   export type CompanyCreateNestedOneWithoutUserInput = {
@@ -12029,6 +12151,13 @@ export namespace Prisma {
     connect?: EventWhereUniqueInput | EventWhereUniqueInput[]
   }
 
+  export type SalesTicketsCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput> | SalesTicketsCreateWithoutCompanyInput[] | SalesTicketsUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: SalesTicketsCreateOrConnectWithoutCompanyInput | SalesTicketsCreateOrConnectWithoutCompanyInput[]
+    createMany?: SalesTicketsCreateManyCompanyInputEnvelope
+    connect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutCompanyInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput>
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput
@@ -12040,6 +12169,13 @@ export namespace Prisma {
     connectOrCreate?: EventCreateOrConnectWithoutCompanyInput | EventCreateOrConnectWithoutCompanyInput[]
     createMany?: EventCreateManyCompanyInputEnvelope
     connect?: EventWhereUniqueInput | EventWhereUniqueInput[]
+  }
+
+  export type SalesTicketsUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput> | SalesTicketsCreateWithoutCompanyInput[] | SalesTicketsUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: SalesTicketsCreateOrConnectWithoutCompanyInput | SalesTicketsCreateOrConnectWithoutCompanyInput[]
+    createMany?: SalesTicketsCreateManyCompanyInputEnvelope
+    connect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
   }
 
   export type EventUpdateManyWithoutCompanyNestedInput = {
@@ -12054,6 +12190,20 @@ export namespace Prisma {
     update?: EventUpdateWithWhereUniqueWithoutCompanyInput | EventUpdateWithWhereUniqueWithoutCompanyInput[]
     updateMany?: EventUpdateManyWithWhereWithoutCompanyInput | EventUpdateManyWithWhereWithoutCompanyInput[]
     deleteMany?: EventScalarWhereInput | EventScalarWhereInput[]
+  }
+
+  export type SalesTicketsUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput> | SalesTicketsCreateWithoutCompanyInput[] | SalesTicketsUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: SalesTicketsCreateOrConnectWithoutCompanyInput | SalesTicketsCreateOrConnectWithoutCompanyInput[]
+    upsert?: SalesTicketsUpsertWithWhereUniqueWithoutCompanyInput | SalesTicketsUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: SalesTicketsCreateManyCompanyInputEnvelope
+    set?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    disconnect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    delete?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    connect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    update?: SalesTicketsUpdateWithWhereUniqueWithoutCompanyInput | SalesTicketsUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: SalesTicketsUpdateManyWithWhereWithoutCompanyInput | SalesTicketsUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: SalesTicketsScalarWhereInput | SalesTicketsScalarWhereInput[]
   }
 
   export type UserUpdateOneRequiredWithoutCompanyNestedInput = {
@@ -12076,6 +12226,20 @@ export namespace Prisma {
     update?: EventUpdateWithWhereUniqueWithoutCompanyInput | EventUpdateWithWhereUniqueWithoutCompanyInput[]
     updateMany?: EventUpdateManyWithWhereWithoutCompanyInput | EventUpdateManyWithWhereWithoutCompanyInput[]
     deleteMany?: EventScalarWhereInput | EventScalarWhereInput[]
+  }
+
+  export type SalesTicketsUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput> | SalesTicketsCreateWithoutCompanyInput[] | SalesTicketsUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: SalesTicketsCreateOrConnectWithoutCompanyInput | SalesTicketsCreateOrConnectWithoutCompanyInput[]
+    upsert?: SalesTicketsUpsertWithWhereUniqueWithoutCompanyInput | SalesTicketsUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: SalesTicketsCreateManyCompanyInputEnvelope
+    set?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    disconnect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    delete?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    connect?: SalesTicketsWhereUniqueInput | SalesTicketsWhereUniqueInput[]
+    update?: SalesTicketsUpdateWithWhereUniqueWithoutCompanyInput | SalesTicketsUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: SalesTicketsUpdateManyWithWhereWithoutCompanyInput | SalesTicketsUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: SalesTicketsScalarWhereInput | SalesTicketsScalarWhereInput[]
   }
 
   export type UserEventCreateNestedManyWithoutEventInput = {
@@ -12346,6 +12510,12 @@ export namespace Prisma {
     connect?: TicketTypeWhereUniqueInput
   }
 
+  export type CompanyCreateNestedOneWithoutSalesInput = {
+    create?: XOR<CompanyCreateWithoutSalesInput, CompanyUncheckedCreateWithoutSalesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutSalesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutSalesTicketsInput = {
     create?: XOR<UserCreateWithoutSalesTicketsInput, UserUncheckedCreateWithoutSalesTicketsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSalesTicketsInput
@@ -12362,6 +12532,16 @@ export namespace Prisma {
     upsert?: TicketTypeUpsertWithoutSalesTicketsInput
     connect?: TicketTypeWhereUniqueInput
     update?: XOR<XOR<TicketTypeUpdateToOneWithWhereWithoutSalesTicketsInput, TicketTypeUpdateWithoutSalesTicketsInput>, TicketTypeUncheckedUpdateWithoutSalesTicketsInput>
+  }
+
+  export type CompanyUpdateOneWithoutSalesNestedInput = {
+    create?: XOR<CompanyCreateWithoutSalesInput, CompanyUncheckedCreateWithoutSalesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutSalesInput
+    upsert?: CompanyUpsertWithoutSalesInput
+    disconnect?: boolean
+    delete?: CompanyWhereInput | boolean
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutSalesInput, CompanyUpdateWithoutSalesInput>, CompanyUncheckedUpdateWithoutSalesInput>
   }
 
   export type UserUpdateOneWithoutSalesTicketsNestedInput = {
@@ -12622,6 +12802,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     events?: EventCreateNestedManyWithoutCompanyInput
+    sales?: SalesTicketsCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutUserInput = {
@@ -12634,6 +12815,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     events?: EventUncheckedCreateNestedManyWithoutCompanyInput
+    sales?: SalesTicketsUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutUserInput = {
@@ -12649,11 +12831,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tiketType: TicketTypeCreateNestedOneWithoutSalesTicketsInput
+    company?: CompanyCreateNestedOneWithoutSalesInput
   }
 
   export type SalesTicketsUncheckedCreateWithoutUserInput = {
     id?: string
     ticketTypeID: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -12672,12 +12856,14 @@ export namespace Prisma {
 
   export type UserEventCreateWithoutUserInput = {
     id?: string
+    status?: boolean
     event: EventCreateNestedOneWithoutUserEventInput
   }
 
   export type UserEventUncheckedCreateWithoutUserInput = {
     id?: string
     eventId: string
+    status?: boolean
   }
 
   export type UserEventCreateOrConnectWithoutUserInput = {
@@ -12709,6 +12895,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     events?: EventUpdateManyWithoutCompanyNestedInput
+    sales?: SalesTicketsUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutUserInput = {
@@ -12720,6 +12907,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     events?: EventUncheckedUpdateManyWithoutCompanyNestedInput
+    sales?: SalesTicketsUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type SalesTicketsUpsertWithWhereUniqueWithoutUserInput = {
@@ -12744,6 +12932,7 @@ export namespace Prisma {
     NOT?: SalesTicketsScalarWhereInput | SalesTicketsScalarWhereInput[]
     id?: StringFilter<"SalesTickets"> | string
     ticketTypeID?: StringFilter<"SalesTickets"> | string
+    companyID?: StringNullableFilter<"SalesTickets"> | string | null
     qrCode?: StringFilter<"SalesTickets"> | string
     paymentMethod?: StringFilter<"SalesTickets"> | string
     isUsed?: BoolFilter<"SalesTickets"> | boolean
@@ -12775,6 +12964,7 @@ export namespace Prisma {
     id?: StringFilter<"UserEvent"> | string
     userId?: StringFilter<"UserEvent"> | string
     eventId?: StringFilter<"UserEvent"> | string
+    status?: BoolFilter<"UserEvent"> | boolean
   }
 
   export type EventCreateWithoutCompanyInput = {
@@ -12820,6 +13010,37 @@ export namespace Prisma {
 
   export type EventCreateManyCompanyInputEnvelope = {
     data: EventCreateManyCompanyInput | EventCreateManyCompanyInput[]
+  }
+
+  export type SalesTicketsCreateWithoutCompanyInput = {
+    id?: string
+    qrCode: string
+    paymentMethod: string
+    isUsed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tiketType: TicketTypeCreateNestedOneWithoutSalesTicketsInput
+    user?: UserCreateNestedOneWithoutSalesTicketsInput
+  }
+
+  export type SalesTicketsUncheckedCreateWithoutCompanyInput = {
+    id?: string
+    ticketTypeID: string
+    qrCode: string
+    paymentMethod: string
+    isUsed?: boolean
+    userid: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTicketsCreateOrConnectWithoutCompanyInput = {
+    where: SalesTicketsWhereUniqueInput
+    create: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type SalesTicketsCreateManyCompanyInputEnvelope = {
+    data: SalesTicketsCreateManyCompanyInput | SalesTicketsCreateManyCompanyInput[]
   }
 
   export type UserCreateWithoutCompanyInput = {
@@ -12891,6 +13112,22 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Event"> | Date | string | null
   }
 
+  export type SalesTicketsUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: SalesTicketsWhereUniqueInput
+    update: XOR<SalesTicketsUpdateWithoutCompanyInput, SalesTicketsUncheckedUpdateWithoutCompanyInput>
+    create: XOR<SalesTicketsCreateWithoutCompanyInput, SalesTicketsUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type SalesTicketsUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: SalesTicketsWhereUniqueInput
+    data: XOR<SalesTicketsUpdateWithoutCompanyInput, SalesTicketsUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type SalesTicketsUpdateManyWithWhereWithoutCompanyInput = {
+    where: SalesTicketsScalarWhereInput
+    data: XOR<SalesTicketsUpdateManyMutationInput, SalesTicketsUncheckedUpdateManyWithoutCompanyInput>
+  }
+
   export type UserUpsertWithoutCompanyInput = {
     update: XOR<UserUpdateWithoutCompanyInput, UserUncheckedUpdateWithoutCompanyInput>
     create: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput>
@@ -12930,12 +13167,14 @@ export namespace Prisma {
 
   export type UserEventCreateWithoutEventInput = {
     id?: string
+    status?: boolean
     user: UserCreateNestedOneWithoutUserEventInput
   }
 
   export type UserEventUncheckedCreateWithoutEventInput = {
     id?: string
     userId: string
+    status?: boolean
   }
 
   export type UserEventCreateOrConnectWithoutEventInput = {
@@ -12998,6 +13237,7 @@ export namespace Prisma {
     isVerify?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    sales?: SalesTicketsCreateNestedManyWithoutCompanyInput
     user: UserCreateNestedOneWithoutCompanyInput
   }
 
@@ -13011,6 +13251,7 @@ export namespace Prisma {
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    sales?: SalesTicketsUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutEventsInput = {
@@ -13103,6 +13344,7 @@ export namespace Prisma {
     isVerify?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sales?: SalesTicketsUpdateManyWithoutCompanyNestedInput
     user?: UserUpdateOneRequiredWithoutCompanyNestedInput
   }
 
@@ -13115,6 +13357,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sales?: SalesTicketsUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type EventCreateWithoutInviteScannerInput = {
@@ -13348,11 +13591,13 @@ export namespace Prisma {
     isUsed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    company?: CompanyCreateNestedOneWithoutSalesInput
     user?: UserCreateNestedOneWithoutSalesTicketsInput
   }
 
   export type SalesTicketsUncheckedCreateWithoutTiketTypeInput = {
     id?: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -13449,6 +13694,37 @@ export namespace Prisma {
     create: XOR<TicketTypeCreateWithoutSalesTicketsInput, TicketTypeUncheckedCreateWithoutSalesTicketsInput>
   }
 
+  export type CompanyCreateWithoutSalesInput = {
+    id?: string
+    name: string
+    email: string
+    phone_number: string
+    nuit_url?: string | null
+    isVerify?: boolean | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    events?: EventCreateNestedManyWithoutCompanyInput
+    user: UserCreateNestedOneWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutSalesInput = {
+    id?: string
+    name: string
+    email: string
+    phone_number: string
+    nuit_url?: string | null
+    isVerify?: boolean | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    events?: EventUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutSalesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutSalesInput, CompanyUncheckedCreateWithoutSalesInput>
+  }
+
   export type UserCreateWithoutSalesTicketsInput = {
     id?: string
     name: string
@@ -13505,6 +13781,41 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     ticketId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CompanyUpsertWithoutSalesInput = {
+    update: XOR<CompanyUpdateWithoutSalesInput, CompanyUncheckedUpdateWithoutSalesInput>
+    create: XOR<CompanyCreateWithoutSalesInput, CompanyUncheckedCreateWithoutSalesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutSalesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutSalesInput, CompanyUncheckedUpdateWithoutSalesInput>
+  }
+
+  export type CompanyUpdateWithoutSalesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    nuit_url?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerify?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    events?: EventUpdateManyWithoutCompanyNestedInput
+    user?: UserUpdateOneRequiredWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutSalesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    nuit_url?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerify?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    events?: EventUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type UserUpsertWithoutSalesTicketsInput = {
@@ -13703,6 +14014,7 @@ export namespace Prisma {
   export type SalesTicketsCreateManyUserInput = {
     id?: string
     ticketTypeID: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -13713,6 +14025,7 @@ export namespace Prisma {
   export type UserEventCreateManyUserInput = {
     id?: string
     eventId: string
+    status?: boolean
   }
 
   export type SalesTicketsUpdateWithoutUserInput = {
@@ -13722,10 +14035,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tiketType?: TicketTypeUpdateOneRequiredWithoutSalesTicketsNestedInput
+    company?: CompanyUpdateOneWithoutSalesNestedInput
   }
 
   export type SalesTicketsUncheckedUpdateWithoutUserInput = {
     ticketTypeID?: StringFieldUpdateOperationsInput | string
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean
@@ -13735,6 +14050,7 @@ export namespace Prisma {
 
   export type SalesTicketsUncheckedUpdateManyWithoutUserInput = {
     ticketTypeID?: StringFieldUpdateOperationsInput | string
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean
@@ -13743,15 +14059,18 @@ export namespace Prisma {
   }
 
   export type UserEventUpdateWithoutUserInput = {
+    status?: BoolFieldUpdateOperationsInput | boolean
     event?: EventUpdateOneRequiredWithoutUserEventNestedInput
   }
 
   export type UserEventUncheckedUpdateWithoutUserInput = {
     eventId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserEventUncheckedUpdateManyWithoutUserInput = {
     eventId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type EventCreateManyCompanyInput = {
@@ -13768,6 +14087,17 @@ export namespace Prisma {
     ticketId: string
     createdAt?: Date | string
     updatedAt?: Date | string | null
+  }
+
+  export type SalesTicketsCreateManyCompanyInput = {
+    id?: string
+    ticketTypeID: string
+    qrCode: string
+    paymentMethod: string
+    isUsed?: boolean
+    userid: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EventUpdateWithoutCompanyInput = {
@@ -13819,21 +14149,55 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SalesTicketsUpdateWithoutCompanyInput = {
+    qrCode?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tiketType?: TicketTypeUpdateOneRequiredWithoutSalesTicketsNestedInput
+    user?: UserUpdateOneWithoutSalesTicketsNestedInput
+  }
+
+  export type SalesTicketsUncheckedUpdateWithoutCompanyInput = {
+    ticketTypeID?: StringFieldUpdateOperationsInput | string
+    qrCode?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    userid?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTicketsUncheckedUpdateManyWithoutCompanyInput = {
+    ticketTypeID?: StringFieldUpdateOperationsInput | string
+    qrCode?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    userid?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserEventCreateManyEventInput = {
     id?: string
     userId: string
+    status?: boolean
   }
 
   export type UserEventUpdateWithoutEventInput = {
+    status?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutUserEventNestedInput
   }
 
   export type UserEventUncheckedUpdateWithoutEventInput = {
     userId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserEventUncheckedUpdateManyWithoutEventInput = {
     userId?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TicketTypeCreateManyTicketInput = {
@@ -13865,6 +14229,7 @@ export namespace Prisma {
 
   export type SalesTicketsCreateManyTiketTypeInput = {
     id?: string
+    companyID?: string | null
     qrCode: string
     paymentMethod: string
     isUsed?: boolean
@@ -13879,10 +14244,12 @@ export namespace Prisma {
     isUsed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneWithoutSalesNestedInput
     user?: UserUpdateOneWithoutSalesTicketsNestedInput
   }
 
   export type SalesTicketsUncheckedUpdateWithoutTiketTypeInput = {
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean
@@ -13892,6 +14259,7 @@ export namespace Prisma {
   }
 
   export type SalesTicketsUncheckedUpdateManyWithoutTiketTypeInput = {
+    companyID?: NullableStringFieldUpdateOperationsInput | string | null
     qrCode?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     isUsed?: BoolFieldUpdateOperationsInput | boolean

@@ -123,8 +123,7 @@ model SalesTickets {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
   ticketTypeID    String @db.ObjectId
   tiketType       TicketType @relation(fields: [ticketTypeID], references: [id], onDelete: Cascade)
-  // quantity        Int
-  companyID       String @db.ObjectId
+  companyID       String? @db.ObjectId  // Tornar opcional
   company         Company? @relation(fields: [companyID], references: [id])
   qrCode          String
   paymentMethod   String
@@ -139,6 +138,7 @@ model UserEvent {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
   userId    String @db.ObjectId
   eventId   String @db.ObjectId
+  status    Boolean @default(true)
   user      User   @relation(fields: [userId], references: [id])
   event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }

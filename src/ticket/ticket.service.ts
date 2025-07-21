@@ -137,6 +137,9 @@ export class TicketService {
               user: {
                 connect: { id: data.user_id },
               },
+              company: {
+                connect: { id: eventData.companyId },
+              },
             },
           });
 
@@ -202,11 +205,11 @@ export class TicketService {
         supportPhone: eventData.company.phone_number || ' - ',
         tickets: resposta.map((t) => ({
           id: t.id,
-          ticketUrl: `${process.env.NEXT_PORT}/my-ticket/` + t.id,
+          ticketUrl: `http://ticket-moz-seven.vercel.app/my-ticket/` + t.id,
           type: t.type,
         })),
         userName: user.name.toUpperCase() || ' - ',
-        websiteUrl: process.env.NEXT_PORT,
+        websiteUrl: 'http://ticket-moz-seven.vercel.app',
         socialMediaLinks: '',
       };
 
@@ -256,24 +259,35 @@ export class TicketService {
       );
     }
   }
-
-  async listSales(userID: string): Promise<any> {
+  async listCompanySales(userID: string): Promise<any> {
     try {
-      const company = await this.prisma.user.findUnique({
+      // 1. Buscar o usuário e sua empresa
+      const userWithCompany = await this.prisma.user.findUnique({
         where: { id: userID },
         include: {
           company: true,
         },
       });
 
-      if (!company)
+      if (!userWithCompany) {
         return {
           success: false,
           message: 'Utilizador não encontrado',
-          data: company,
         };
+      }
 
-      const resp = await this.prisma.salesTickets.findMany({
+      if (!userWithCompany.company) {
+        return {
+          success: false,
+          message: 'Utilizador não está associado a nenhuma empresa',
+        };
+      }
+
+      // 2. Buscar todas as vendas da empresa do promotor (incluindo verificação de null)
+      const sales = await this.prisma.salesTickets.findMany({
+        where: {
+          companyID: userWithCompany.company.id,
+        },
         include: {
           user: true,
           tiketType: {
@@ -286,19 +300,27 @@ export class TicketService {
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
 
-      if (resp.length == 0) {
+      if (sales.length === 0) {
         return {
-          success: false,
-          message: 'Nenhuma venda encontrada',
+          success: true,
+          data: [],
+          message: 'Nenhuma venda encontrada para esta empresa',
         };
       }
 
-      return resp;
+      return {
+        success: true,
+        data: sales,
+        message: 'Vendas da empresa listadas com sucesso',
+      };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisição -> ' + error,
+        'Erro ao processar requisição: ' + error.message,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -309,6 +331,7 @@ export class TicketService {
       const resp = await this.prisma.salesTickets.findMany({
         include: {
           user: true,
+          company: true,
           tiketType: {
             include: {
               ticket: {
