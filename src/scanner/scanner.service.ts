@@ -26,19 +26,19 @@ export class ScannerService {
       if (!resp)
         return {
           success: false,
-          message: 'Ticket nao encontrado',
+          message: 'Bilhete não encontrado',
         };
 
       if (resp.isUsed) {
         return {
           success: false,
-          message: 'Ticket ja usado',
+          message: 'Bilhete já utilizado',
           data: resp,
         };
       } else {
         return {
           success: true,
-          message: 'Bilhete valido',
+          message: 'Bilhete válido',
         };
       }
     } catch (error) {
@@ -71,14 +71,15 @@ export class ScannerService {
       if (!resp)
         return {
           success: false,
-          message: 'nenhum ticket vendido encontrado',
+          message: 'Nenhum bilhete vendido encontrado',
         };
 
       if (resp.isUsed) {
         return {
           success: false,
           message:
-            'Bilhete ja foi usado, data e hora de uso: -> ' + resp.updatedAt,
+            'Bilhete já foi utilizado, data e hora de utilização: ' +
+            resp.updatedAt,
           data: resp,
         };
       } else {
@@ -107,19 +108,19 @@ export class ScannerService {
 
         return {
           success: true,
-          message: 'Bilhete validado',
+          message: 'Bilhete validado com sucesso',
           data: check,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Erro oa procesar equisciao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  async getValidatedTIcket(eventID: string): Promise<any> {
+  async getValidatedTickets(eventID: string): Promise<any> {
     try {
       const resp = await this.prisma.salesTickets.findMany({
         where: {
@@ -151,7 +152,7 @@ export class ScannerService {
       if (resp.length == 0) {
         return {
           success: false,
-          message: 'Nenhum bilhete vendido encontrado',
+          message: 'Nenhum bilhete validado encontrado',
         };
       }
 

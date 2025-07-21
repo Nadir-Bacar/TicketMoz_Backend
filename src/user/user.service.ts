@@ -5,12 +5,14 @@ import { UserDto } from './dto/get-users';
 import { CreateUserDto, FindUserDto } from './dto/create-user';
 import { response } from 'express';
 import { EmailService } from 'src/email/email.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   // Busca todos os utilizadores
@@ -34,14 +36,35 @@ export class UserService {
 
       return {
         success: true,
-        data: plainToInstance(FindUserDto, response),
+        data: plainToInstance(
+          FindUserDto,
+          response.filter((t) => t.user_type != 'master-admin'),
+        ),
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao buscar utilizadores',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Cria utilizadores
   async createUser(user: CreateUserDto): Promise<any> {
     try {
+      const verify = await this.prisma.user.findFirst({
+        where: {
+          email: user.email,
+        },
+      });
+
+      if (verify) {
+        return {
+          success: false,
+          message: 'Email já existe',
+        };
+      }
+
       if (user.user_type == 'promotor') {
         const response = await this.prisma.user.create({
           data: {
@@ -82,14 +105,32 @@ export class UserService {
       }
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requiscao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
+  async sendEmailToConfirm(user: CreateUserDto) {
+    try {
+      const payload = { user: user };
+      const token = await this.jwtService.signAsync(payload);
+
+      const url = `http://localhost:3000/user-registe/${token}`;
+
+      await this.emailService.sendAccountActivation(user.email, user.name, url);
+
+      return {
+        success: true,
+        message: 'Email enviado com sucesso',
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   // Buscar mediante a role
-  async getuserByType(
+  async getUserByType(
     type: 'comprador' | 'scanner' | 'promotor',
   ): Promise<any> {
     try {
@@ -103,29 +144,27 @@ export class UserService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processa requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  // deletar todos utilizadores
+  // Deletar todos utilizadores
   async deleteAll(): Promise<any> {
     try {
       await this.prisma.company.deleteMany();
-
       const response = await this.prisma.user.deleteMany();
-
       return response;
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  // buscar todas as empresas
+  // Buscar todas as empresas
   async getAllCompany(): Promise<any> {
     try {
       const response = await this.prisma.company.findMany();
@@ -140,7 +179,12 @@ export class UserService {
         success: true,
         data: response,
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao buscar empresas',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Bloquear utilizador
@@ -182,7 +226,7 @@ export class UserService {
   // Aprovar promotor (verificar empresa)
   async approvePromoter(userId: string): Promise<any> {
     try {
-      // Busca o usuário e a empresa associada
+      // Busca o utilizador e a empresa associada
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
         include: { company: true },
@@ -210,6 +254,37 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         'Erro ao aprovar promotor -> ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateName(data: any): Promise<any> {
+    try {
+      const response = await this.prisma.user.update({
+        where: { id: data.userID },
+        data: {
+          name: data.name,
+        },
+        include: {
+          company: true,
+        },
+      });
+
+      if (!response) {
+        return {
+          success: false,
+          message: 'Erro ao atualizar utilizador',
+        };
+      }
+
+      return {
+        success: true,
+        data: response,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao atualizar nome -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }

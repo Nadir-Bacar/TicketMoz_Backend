@@ -51,20 +51,71 @@ export class AuthService {
     }
   }
 
-  async verifyUser(email: string): Promise<{ success: boolean }> {
+  async verifyUser(email: string): Promise<any> {
     try {
       const user = await this.prisma.user.findFirst({
         where: { email },
+        include: {
+          company: true,
+        },
       });
 
       if (!user) {
-        return { success: false };
+        return {
+          success: false,
+          message: 'Email não existe',
+        };
       }
 
-      return { success: true };
+      switch (user.user_type) {
+        case 'promotor':
+          if (user.company != null && user.company.isVerify == false) {
+            return {
+              success: false,
+              message:
+                'A conta está bloqueada à espera da aprovação da linha de suporte, fique atento ao seu email',
+            };
+          } else if (user.isVerify == false) {
+            return {
+              success: false,
+              message: 'Sua conta está bloqueada, contate a linha de suporte',
+            };
+          } else {
+            return {
+              success: true,
+              data: user,
+            };
+          }
+        case 'scanner':
+          if (user.isVerify == false) {
+            return {
+              success: false,
+              message: 'Utilizador bloqueado, contate a linha de suporte',
+            };
+          } else {
+            return {
+              success: true,
+              data: user,
+            };
+          }
+
+        case 'cliente':
+          if (user.isVerify == false) {
+            return {
+              success: false,
+              message: 'Utilizador bloqueado, contate a linha de suporte',
+            };
+          } else {
+            return {
+              success: true,
+              data: user,
+            };
+          }
+          break;
+      }
     } catch (error) {
       throw new HttpException(
-        'Error verifying user',
+        'Erro ao verificar utilizador',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -80,7 +131,7 @@ export class AuthService {
       });
 
       if (!user) {
-        return { success: false, message: 'User not found' };
+        return { success: false, message: 'Utilizador não encontrado' };
       }
 
       const payload = { email: email, name: user.name };
@@ -88,10 +139,10 @@ export class AuthService {
       const resetlink = 'http://localhost:3000/auth/reset-password/' + token;
       await this.emailService.resetPassword(user.name, email, resetlink);
 
-      return { success: true, message: 'Recovery email sent' };
+      return { success: true, message: 'Email de recuperação enviado' };
     } catch (error) {
       throw new HttpException(
-        'Error sending recovery email',
+        'Erro ao enviar email de recuperação',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -114,11 +165,11 @@ export class AuthService {
 
       return {
         success: true,
-        message: 'senha atualizado com sucesso',
+        message: 'Senha atualizada com sucesso',
       };
     } catch (error) {
       throw new HttpException(
-        'Erro redifindo a senha -> ' + error,
+        'Erro ao redefinir a senha -> ' + error,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

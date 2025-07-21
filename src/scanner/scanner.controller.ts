@@ -17,6 +17,6 @@ export class ScannerController {
 
   @Get('validated-tickets/:eventID')
   getValidadtedTickets(@Param('eventID') eventID: string) {
-    return this.scannerService.getValidatedTIcket(eventID);
+    return this.scannerService.getValidatedTickets(eventID);
   }
 }

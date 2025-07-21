@@ -7,6 +7,22 @@ import { SendTicketEmailParams } from 'types/ticket-mail';
 export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
+  async sendAccountActivation(
+    email: string,
+    name: string,
+    activationLink: string,
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Ativação da sua conta',
+      template: './create-user',
+      context: {
+        name,
+        activationLink,
+      },
+    });
+  }
+
   async sendWelcomeEmail(email: string, name: string, link: string) {
     await this.mailerService.sendMail({
       to: email,

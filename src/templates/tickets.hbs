@@ -32,13 +32,13 @@
   </head>
   <body>
     <div class='container'>
-      <h1>Olá, {{userName}}! 👋</h1>
+      <h1>Olá, {{userName}}!!!</h1>
       <p>Seus ingressos para
         <strong>{{eventName}}</strong>
         estão confirmados! Aqui estão os detalhes:</p>
 
       {{#if tickets.length}}
-        <h2>📌 Seus Ingressos:</h2>
+        <h2>Seus Ingressos:</h2>
         <ul>
           {{#each tickets}}
             <li>
@@ -50,10 +50,10 @@
         </ul>
       {{/if}}
 
-      <p>📍
+      <p>
         <strong>Local:</strong>
         {{eventLocation}}<br />
-        📅
+
         <strong>Data:</strong>
         {{eventDate}}</p>
 

@@ -24,9 +24,14 @@ export class UserController {
     return this.userService.createUser(data);
   }
 
+  @Post('create-email')
+  createUserEmail(@Body() data: CreateUserDto) {
+    return this.userService.sendEmailToConfirm(data);
+  }
+
   @Get('by-type')
   getUserByType(type: 'comprador' | 'scanner' | 'promotor') {
-    return this.userService.getuserByType(type);
+    return this.userService.getUserByType(type);
   }
 
   @Delete('delete/all')
@@ -37,6 +42,11 @@ export class UserController {
   @Get('companys')
   getAllCompanys() {
     return this.userService.getAllCompany();
+  }
+
+  @Put('update-name')
+  updateName(@Body() data: any) {
+    return this.userService.updateName(data);
   }
 
   // Bloquear utilizador

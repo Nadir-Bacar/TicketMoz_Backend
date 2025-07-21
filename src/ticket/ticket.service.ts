@@ -27,7 +27,7 @@ export class TicketService {
       if (!company)
         return {
           success: false,
-          message: 'Utilizador nao encontra',
+          message: 'Utilizador não encontrado',
         };
 
       const tickets = await this.prisma.ticket.findMany({
@@ -37,13 +37,13 @@ export class TicketService {
         },
         where: {
           event: {
-            companyId: company.id,
+            companyId: company.company.id, // Fixed: changed from company.id to company.company.id
           },
         },
       });
       return tickets;
     } catch (error) {
-      throw new Error(`Error fetching tickets: ${error.message}`);
+      throw new Error(`Erro ao buscar bilhetes: ${error.message}`);
     }
   }
 
@@ -59,7 +59,7 @@ export class TicketService {
       if (!company)
         return {
           success: false,
-          message: 'Utilizador nao encontra',
+          message: 'Utilizador não encontrado',
         };
 
       const ticketTypes = await this.prisma.ticketType.findMany({
@@ -73,14 +73,14 @@ export class TicketService {
         where: {
           ticket: {
             event: {
-              companyId: company.id,
+              companyId: company.company.id, // Fixed: changed from company.id to company.company.id
             },
           },
         },
       });
       return ticketTypes;
     } catch (error) {
-      throw new Error(`Error fetching ticket types: ${error.message}`);
+      throw new Error(`Erro ao buscar tipos de bilhetes: ${error.message}`);
     }
   }
 
@@ -93,7 +93,12 @@ export class TicketService {
         success: true,
         data: resp2,
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao eliminar registos',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async buyTicket(data: any): Promise<any> {
@@ -135,7 +140,6 @@ export class TicketService {
             },
           });
 
-          // Diminui a quantidade disponível do TicketType Normal
           await this.prisma.ticketType.update({
             where: { id: normalTicketType.id },
             data: { quantity: { decrement: 1 } },
@@ -164,7 +168,6 @@ export class TicketService {
             },
           });
 
-          // Diminui a quantidade disponível do TicketType VIP
           await this.prisma.ticketType.update({
             where: { id: vipTicketType.id },
             data: { quantity: { decrement: 1 } },
@@ -187,7 +190,7 @@ export class TicketService {
       if (!user)
         return {
           success: false,
-          message: 'nenhum utilizador encontrado',
+          message: 'Nenhum utilizador encontrado',
         };
 
       const params: SendTicketEmailParams = {
@@ -199,12 +202,11 @@ export class TicketService {
         supportPhone: eventData.company.phone_number || ' - ',
         tickets: resposta.map((t) => ({
           id: t.id,
-          ticketUrl:
-            'https://ticketmoz-backend.onrender.com//my-ticket/' + t.id,
+          ticketUrl: `${process.env.NEXT_PORT}/my-ticket/` + t.id,
           type: t.type,
         })),
         userName: user.name.toUpperCase() || ' - ',
-        websiteUrl: 'https://ticket-moz-seven.vercel.app/',
+        websiteUrl: process.env.NEXT_PORT,
         socialMediaLinks: '',
       };
 
@@ -216,13 +218,13 @@ export class TicketService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  async getSaledTciketById(id: string): Promise<any> {
+  async getSaledTicketById(id: string): Promise<any> {
     try {
       const resp = await this.prisma.salesTickets.findFirst({
         where: { id: id },
@@ -249,7 +251,7 @@ export class TicketService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processoar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -267,7 +269,8 @@ export class TicketService {
       if (!company)
         return {
           success: false,
-          message: 'Utilizador nao encontra',
+          message: 'Utilizador não encontrado',
+          data: company,
         };
 
       const resp = await this.prisma.salesTickets.findMany({
@@ -279,15 +282,6 @@ export class TicketService {
                 include: {
                   event: true,
                 },
-              },
-            },
-          },
-        },
-        where: {
-          tiketType: {
-            ticket: {
-              event: {
-                companyId: company.id,
               },
             },
           },
@@ -304,7 +298,7 @@ export class TicketService {
       return resp;
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -337,7 +331,7 @@ export class TicketService {
       return resp;
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -350,7 +344,7 @@ export class TicketService {
       return resp;
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -360,8 +354,7 @@ export class TicketService {
     const url = 'https://eticketsmz.site/etickets-gateway/api/v1/payments';
 
     const headers = {
-      Authorization:
-        'Basic cGtfdGVzdF84NzkyMzNiMzgwYjRjMjU3YzAxMzQwNWIyNWNiM2Q5Mzpza190ZXN0XzViODNiZTJlYTlhZTVlZDdiY2ZlZTg2NjI3YmE3YzczMWYzNzVkNzZjY2QxMjI4Ng==',
+      Authorization: process.env.NEST_PAY_AUTHORIZATION,
       'Content-Type': 'application/json',
     };
 
@@ -380,7 +373,7 @@ export class TicketService {
       if (!response || !response.data) {
         return {
           success: false,
-          message: 'Erro ao relaziar pagamento',
+          message: 'Erro ao realizar pagamento',
         };
       }
 
@@ -399,7 +392,7 @@ export class TicketService {
       const url = 'http://64.23.143.176:8090/api/payments';
 
       const headers = {
-        'X-API-KEY': 'CylJSo9boa-eO7QVCGeOaXyNLb0tDP8IXkqp0EV9Wbg',
+        'X-API-KEY': process.env.NEST_X_API_KEY,
         'Content-Type': 'application/json',
       };
 
@@ -436,23 +429,22 @@ export class TicketService {
   async confirmPaymentAlternative(data: any): Promise<any> {
     try {
       if (!data?.paymentID) {
-        throw new Error('Payment ID is required');
+        throw new Error('ID de pagamento é obrigatório');
       }
 
       const url = `http://64.23.143.176:8090/api/payments/${data.paymentID}/confirm`;
 
       const headers = {
-        'X-API-KEY': 'CylJSo9boa-eO7QVCGeOaXyNLb0tDP8IXkqp0EV9Wbg',
+        'X-API-KEY': process.env.NEST_X_API_KEY,
         'Content-Type': 'application/json',
       };
 
-      // Note: The confirm endpoint might need an empty body {}
       const response = await firstValueFrom(
         this.httpService.post(url, {}, { headers, timeout: 60000 }),
       );
 
       if (!response?.data) {
-        throw new Error('No response data received from confirmation service');
+        throw new Error('Nenhum dado recebido do serviço de confirmação');
       }
 
       return {
@@ -460,9 +452,9 @@ export class TicketService {
         data: response.data,
       };
     } catch (error) {
-      console.error('Confirmation error:', error);
+      console.error('Erro na confirmação:', error);
       throw new HttpException(
-        error.response?.data?.message || 'Failed to confirm payment',
+        error.response?.data?.message || 'Falha ao confirmar pagamento',
         error.response?.status || HttpStatus.BAD_REQUEST,
       );
     }

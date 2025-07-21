@@ -27,14 +27,13 @@ export class InviteScannerService {
       },
     });
 
-    // Envie o email (exemplo, use seu serviço real de email)
-    const link = `http://localhost:3000/scanner-invite/${token}`;
-    // await this.emailService.send(email, 'Convite para ser scanner', `Clique aqui: ${link}`);
+    // Envia o email (exemplo, use seu serviço real de email)
+    const link = `${process.env.NEXT_PORT}/scanner-invite/${token}`;
 
     return {
       success: true,
-      message: 'Convite enviado!',
-      link, // para debug, remova em produção
+      message: 'Convite enviado com sucesso!',
+      link,
       expiresAt,
     };
   }
@@ -73,7 +72,24 @@ export class InviteScannerService {
           message: 'Limite de scanners atingido!',
         };
 
-      // Relacione o user ao evento (UserEvent)
+      const verifyUser = await this.prisma.event.findFirst({
+        where: {
+          userEvent: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+      });
+
+      if (verifyUser) {
+        return {
+          success: false,
+          message: 'Utilizador ja esta associado ao evento',
+        };
+      }
+
+      // Relaciona o utilizador ao evento (UserEvent)
       await this.prisma.userEvent.create({
         data: {
           event: {
@@ -97,8 +113,10 @@ export class InviteScannerService {
 
       return {
         success: true,
-        message: 'Convite aceito! Agora você é scanner deste evento.',
+        message: 'Convite aceite! Agora é um scanner deste evento.',
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new BadRequestException('Erro ao processar o convite');
+    }
   }
 }

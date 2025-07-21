@@ -50,7 +50,7 @@ export class TicketController {
 
   @Get('saled-ticket/:id')
   getSales(@Param('id') id: string) {
-    return this.ticketService.getSaledTciketById(id);
+    return this.ticketService.getSaledTicketById(id);
   }
 
   @Get('list-sales/:userID')

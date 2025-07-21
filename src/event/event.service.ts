@@ -11,7 +11,7 @@ import {
 export class EventService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // abuscar todosos eventos
+  // Buscar todos os eventos
   async getAll(): Promise<any> {
     try {
       const response = await this.prisma.event.findMany({
@@ -43,7 +43,7 @@ export class EventService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -61,7 +61,7 @@ export class EventService {
       if (!company)
         return {
           success: false,
-          message: 'Utilizador nao encontra',
+          message: 'Utilizador não encontrado',
         };
 
       const resp = await this.prisma.event.findMany({
@@ -72,7 +72,11 @@ export class EventService {
           inviteScanner: true,
           ticket: {
             include: {
-              ticketType: true,
+              ticketType: {
+                include: {
+                  SalesTickets: true,
+                },
+              },
             },
           },
         },
@@ -81,7 +85,7 @@ export class EventService {
       if (resp.length == 0)
         return {
           success: false,
-          message: 'Nao ha eventos',
+          message: 'Não há eventos',
           data: company,
         };
 
@@ -127,7 +131,7 @@ export class EventService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -170,13 +174,13 @@ export class EventService {
       };
     } catch (error) {
       throw new HttpException(
-        'Erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  //   criar evento
+  // Criar evento
   async createEvent(event: CreateEventDto): Promise<any> {
     try {
       const response = await this.prisma.event.create({
@@ -221,7 +225,7 @@ export class EventService {
       };
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -246,7 +250,7 @@ export class EventService {
 
       if (!existingTicket) {
         throw new HttpException(
-          'No ticket found for this event',
+          'Nenhum ticket encontrado para este evento',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -381,7 +385,7 @@ export class EventService {
       };
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -401,7 +405,7 @@ export class EventService {
       });
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -416,13 +420,13 @@ export class EventService {
       if (ticket.quantity <= 0) {
         return {
           success: false,
-          message: 'Tem zero de tiket nao ha o uqe remover',
+          message: 'Tem zero de tickets, não há o que remover',
         };
       } else if (Number(qtd) > ticket.quantity) {
         return {
           success: false,
           message:
-            'A quantidade a ser removida nao pode ser maior que o disponivel',
+            'A quantidade a ser removida não pode ser maior que a disponível',
         };
       }
 
@@ -434,7 +438,7 @@ export class EventService {
       });
     } catch (error) {
       throw new HttpException(
-        'erro ao processar requisicao -> ' + error,
+        'Erro ao processar requisição -> ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -445,13 +449,13 @@ export class EventService {
       const resp = await this.prisma.event.deleteMany();
       return {
         success: true,
-        message: 'Deletado omc sucesso',
+        message: 'Deletado com sucesso',
         data: resp,
       };
     } catch (error) {
       console.log('Erro ->', error);
       throw new HttpException(
-        `Erro ao processar requiscao -> ${error}`,
+        `Erro ao processar requisição -> ${error}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -478,7 +482,7 @@ export class EventService {
     } catch (error) {
       console.log('Erro ->', error);
       throw new HttpException(
-        `Erro ao processar requiscao -> ${error}`,
+        `Erro ao processar requisição -> ${error}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -495,7 +499,7 @@ export class EventService {
       });
 
       if (resp.length == 0) {
-        return { success: false, message: 'Nehum utilizador econtrado' };
+        return { success: false, message: 'Nenhum utilizador encontrado' };
       }
 
       return {
@@ -518,7 +522,11 @@ export class EventService {
         include: {
           ticket: {
             include: {
-              ticketType: true,
+              ticketType: {
+                include: {
+                  SalesTickets: true,
+                },
+              },
             },
           },
         },
