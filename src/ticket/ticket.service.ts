@@ -6,7 +6,6 @@ import { SendTicketEmailParams } from 'types/ticket-mail';
 import axios from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class TicketService {
@@ -102,176 +101,131 @@ export class TicketService {
     }
   }
 
-async buyTicket(data: any): Promise<any> {
-  try {
-    const eventData = await this.prisma.event.findFirst({
-      where: { id: String(data.eventId) },
-      include: {
-        company: true,
-        ticket: {
-          include: {
-            ticketType: true,
+  async buyTicket(data: any): Promise<any> {
+    try {
+      const eventData = await this.prisma.event.findFirst({
+        where: { id: String(data.eventId) },
+        include: {
+          company: true,
+          ticket: {
+            include: {
+              ticketType: true,
+            },
           },
         },
-      },
-    });
-
-    if (!eventData) {
-      return {
-        success: false,
-        message: 'Nenhum evento encontrado',
-      };
-    }
-
-    // Find ticket types by name/type instead of assuming array positions
-    const vipTicketType = eventData.ticket.ticketType.find(
-      (tt) => tt.name?.toLowerCase().includes('vip') || tt.name?.toLowerCase().includes('vip')
-    );
-    const normalTicketType = eventData.ticket.ticketType.find(
-      (tt) => tt.name?.toLowerCase().includes('normal') || tt.name?.toLowerCase().includes('normal')
-    );
-
-    let resposta = [];
-
-    // Process normal tickets
-    if (data.normal_ticket > 0) {
-      if (!normalTicketType) {
-        return {
-          success: false,
-          message: 'Tipo de bilhete normal não encontrado',
-        };
-      }
-
-      // Check availability
-      if (normalTicketType.quantity < data.normal_ticket) {
-        return {
-          success: false,
-          message: 'Não há bilhetes normais suficientes disponíveis',
-        };
-      }
-
-      for (let i = 0; i < data.normal_ticket; i++) {
-        const normal = await this.prisma.salesTickets.create({
-          data: {
-            qrCode: randomUUID(), // Generate unique QR code
-            paymentMethod: String(data.payment_method || 'default'),
-            tiketType: {
-              connect: { id: String(normalTicketType.id) },
-            },
-            user: {
-              connect: { id: String(data.user_id) },
-            },
-            company: {
-              connect: { id: String(eventData.companyId) },
-            },
-          },
-        });
-
-        resposta.push({
-          type: 'Normal',
-          ...normal,
-        });
-      }
-
-      // Update ticket quantity once after all tickets are created
-      await this.prisma.ticketType.update({
-        where: { id: String(normalTicketType.id) },
-        data: { quantity: { decrement: data.normal_ticket } },
       });
-    }
 
-    // Process VIP tickets
-    if (data.vip_ticket > 0) {
-      if (!vipTicketType) {
+      if (!eventData) {
         return {
           success: false,
-          message: 'Tipo de bilhete VIP não encontrado',
+          message: 'Nenhum evento encontrado',
         };
       }
 
-      // Check availability
-      if (vipTicketType.quantity < data.vip_ticket) {
-        return {
-          success: false,
-          message: 'Não há bilhetes VIP suficientes disponíveis',
-        };
+      let resposta = [];
+
+      if (data.normal_ticket > 0) {
+        for (let i = 0; i < data.normal_ticket; i++) {
+          const normalTicketType = eventData.ticket.ticketType[1];
+          const normal = await this.prisma.salesTickets.create({
+            data: {
+              qrCode: '' + randomInt(1000),
+              paymentMethod: data.payment_method + '' || 'default',
+              tiketType: {
+                connect: { id: normalTicketType.id + '' },
+              },
+              user: {
+                connect: { id: data.user_id + '' },
+              },
+              company: {
+                connect: { id: eventData.companyId + '' },
+              },
+            },
+          });
+
+          await this.prisma.ticketType.update({
+            where: { id: normalTicketType.id + '' },
+            data: { quantity: { decrement: 1 } },
+          });
+
+          resposta.push({
+            type: 'Normal',
+            ...normal,
+          });
+        }
       }
 
-      for (let i = 0; i < data.vip_ticket; i++) {
-        const vip = await this.prisma.salesTickets.create({
-          data: {
-            qrCode: randomUUID(), // Generate unique QR code
-            paymentMethod: String(data.payment_method || 'default'),
-            tiketType: {
-              connect: { id: String(vipTicketType.id) },
+      if (data.vip_ticket > 0) {
+        for (let i = 0; i < data.vip_ticket; i++) {
+          const vipTicketType = eventData.ticket.ticketType[0];
+          const vip = await this.prisma.salesTickets.create({
+            data: {
+              qrCode: '' + randomInt(1000),
+              paymentMethod: data.payment_method || 'default',
+              tiketType: {
+                connect: { id: vipTicketType.id + '' },
+              },
+              user: {
+                connect: { id: data.user_id + '' },
+              },
             },
-            user: {
-              connect: { id: String(data.user_id) },
-            },
-            company: {
-              connect: { id: String(eventData.companyId) }, // Added missing company connection
-            },
-          },
-        });
+          });
 
-        resposta.push({
-          type: 'VIP',
-          ...vip,
-        });
+          await this.prisma.ticketType.update({
+            where: { id: vipTicketType.id + '' },
+            data: { quantity: { decrement: 1 } },
+          });
+
+          resposta.push({
+            type: 'VIP',
+            ...vip,
+          });
+        }
       }
 
-      // Update ticket quantity once after all tickets are created
-      await this.prisma.ticketType.update({
-        where: { id: String(vipTicketType.id) },
-        data: { quantity: { decrement: data.vip_ticket } },
+      const user = await this.prisma.user.findFirst({
+        where: { id: data.user_id + '' },
+        include: {
+          company: true,
+        },
       });
-    }
 
-    const user = await this.prisma.user.findFirst({
-      where: { id: String(data.user_id) },
-      include: {
-        company: true,
-      },
-    });
+      if (!user)
+        return {
+          success: false,
+          message: 'Nenhum utilizador encontrado',
+        };
 
-    if (!user) {
-      return {
-        success: false,
-        message: 'Nenhum utilizador encontrado',
+      const params: SendTicketEmailParams = {
+        email: user.email,
+        eventDate: eventData.event_date,
+        eventLocation: eventData.location,
+        eventName: eventData.title || ' - ',
+        organizationName: eventData.company.name || ' - ',
+        supportPhone: eventData.company.phone_number || ' - ',
+        tickets: resposta.map((t) => ({
+          id: t.id + '',
+          ticketUrl: `http://ticket-moz-seven.vercel.app/my-ticket/` + t.id,
+          type: t.type + '',
+        })),
+        userName: user.name.toUpperCase() || ' - ',
+        websiteUrl: 'http://ticket-moz-seven.vercel.app',
+        socialMediaLinks: '',
       };
+
+      await this.mailService.sendTickets(params);
+
+      return {
+        success: true,
+        data: resposta,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao processar requisição -> ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    const params: SendTicketEmailParams = {
-      email: user.email,
-      eventDate: eventData.event_date,
-      eventLocation: eventData.location,
-      eventName: eventData.title || ' - ',
-      organizationName: eventData.company.name || ' - ',
-      supportPhone: eventData.company.phone_number || ' - ',
-      tickets: resposta.map((t) => ({
-        id: String(t.id), // Ensure ID is string
-        ticketUrl: "http://ticket-moz-seven.vercel.app/my-ticket/${t.id}",
-        type: String(t.type),
-      })),
-      userName: user.name.toUpperCase() || ' - ',
-      websiteUrl: 'http://ticket-moz-seven.vercel.app',
-      socialMediaLinks: '',
-    };
-
-    await this.mailService.sendTickets(params);
-
-    return {
-      success: true,
-      data: resposta,
-    };
-  } catch (error) {
-    console.error('Error in buyTicket:', error);
-    throw new HttpException(
-      'Erro ao processar requisição -> ' + error.message,
-      HttpStatus.BAD_REQUEST,
-    );
   }
-}
 
   async getSaledTicketById(id: string): Promise<any> {
     try {
