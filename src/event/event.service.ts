@@ -36,10 +36,34 @@ export class EventService {
           success: true,
           message: 'Nenhum evento encontrado',
         };
+      const eventos = response.filter((e) => {
+        const today = new Date();
+        const eventDate = new Date(e.event_date);
+
+        const isDateExpired = eventDate < today;
+        const isPending = e.status === 'pendente';
+
+        const ticketTypes = e.ticket?.ticketType || [];
+
+        // Caso não exista nenhum tipo de bilhete registrado
+        const hasNoTicketTypes = ticketTypes.length === 0;
+
+        // Verifica se todos os tipos de bilhetes estão esgotados
+        const allTypesSoldOut =
+          ticketTypes.length > 0 &&
+          ticketTypes.every((t) => {
+            const sold = t.SalesTickets?.length || 0;
+            return sold >= t.quantity;
+          });
+
+        return (
+          isDateExpired || isPending || hasNoTicketTypes || allTypesSoldOut
+        );
+      });
 
       return {
         success: true,
-        data: response,
+        data: eventos,
       };
     } catch (error) {
       throw new HttpException(
