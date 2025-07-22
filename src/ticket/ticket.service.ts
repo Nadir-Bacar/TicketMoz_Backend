@@ -140,7 +140,7 @@ async buyTicket(data: any): Promise<any> {
           const normal = await this.prisma.salesTickets.create({
             data: {
               qrCode: '' + randomInt(1000),
-              paymentMethod: data.payment_method + '' || 'default',
+              paymentMethod: data.payment_method,
               tiketType: {
                 connect: { id: normalTicketType.id + '' },
               },
@@ -180,7 +180,7 @@ async buyTicket(data: any): Promise<any> {
           const vip = await this.prisma.salesTickets.create({
             data: {
               qrCode: '' + randomInt(1000),
-              paymentMethod: data.payment_method || 'default',
+              paymentMethod: data.payment_method,
               tiketType: {
                 connect: { id: vipTicketType.id + '' },
               },
